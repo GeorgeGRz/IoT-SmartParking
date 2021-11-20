@@ -9,6 +9,10 @@ By implementing this project we validate the basic points made by the IoT object
 ## Hardware Prerequisites
 - RaspberryPi
 - Robot Smart Car 4WD - Chassis 26cm
+- Smartphone 
+
+## Software Prerequisites
+- Smart Parking Android Application
 
 ## Brief System Functioning Description 
 ### User Authentication (Security project driven)
