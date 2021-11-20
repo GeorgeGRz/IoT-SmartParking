@@ -12,7 +12,6 @@ By implementing this project we validate the basic points made by the IoT object
 - Arduino
 - Contactless Magnetic Sensor
 - Robot Smart Car 4WD - Chassis 26cm
-- 
 
 ## Brief System Functioning Description 
 ### User Authentication (Security project driven)
