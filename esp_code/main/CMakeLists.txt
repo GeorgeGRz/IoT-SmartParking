@@ -1,3 +1,0 @@
-idf_component_register(SRCS "websocket_example.c"
-                    INCLUDE_DIRS "."
-                    EMBED_TXTFILES domain.crt)
