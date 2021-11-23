@@ -7,8 +7,8 @@ const fs = require("fs");
 
 
 server = HttpsServer({
-    cert: fs.readFileSync("/home/george/node-server/certificates/domain.crt"),
-    key: fs.readFileSync("/home/george/node-server/certificates/domain.key"),
+    cert: fs.readFileSync("/home/george/esp/websocket_git_repo/node-server/certificates/domain.crt"),
+    key: fs.readFileSync("/home/george/esp/websocket_git_repo/node-server/certificates/domain.key"),
                      passphrase: 'athens'
 }, function( req, res ) {res.writeHead(200);res.end('<b>Hello World!</b>');}).listen(9898);
 
