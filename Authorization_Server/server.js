@@ -58,7 +58,7 @@ app.get('/cars', function(req,res){
     
 });
 app.post('/verify',function(request,response){
-    
+    console.log("/VERIFY RECEIVED " + request.body);
 });
 app.post('/authenticate', function(request, response){
     console.log(request.body);

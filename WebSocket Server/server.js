@@ -1,9 +1,12 @@
 const WebSocketServer = require("ws").Server;
 const HttpsServer = require('https').createServer;
 const fs = require("fs");
+
+
+
+
 //import { WebSocketServer } from 'ws';
 
-//Server will implement A* path finding algorithm to calculate shortest path to ESP32 car
 
 
 server = HttpsServer({
@@ -16,8 +19,8 @@ const wss = new WebSocketServer({ server });
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function message(data) {
-    console.log('received: %s', JSON.parse(data));
-    
+    console.log('received: %s, sending back to verify', JSON.parse(data));
+   
   });
   
   ws.send('RECEIVED');
