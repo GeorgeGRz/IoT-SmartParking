@@ -7,8 +7,8 @@ const fs = require("fs");
 
 
 server = HttpsServer({
-    cert: fs.readFileSync("/home/george/esp/websocket_git_repo/node-server/certificates/domain.crt"),
-    key: fs.readFileSync("/home/george/esp/websocket_git_repo/node-server/certificates/domain.key"),
+    cert: fs.readFileSync("/home/george/Documents/IoT-Project/WebSocket Server/certificates/domain.crt"),
+    key: fs.readFileSync("/home/george/Documents/IoT-Project/WebSocket Server/certificates/domain.key"),
                      passphrase: 'athens'
 }, function( req, res ) {res.writeHead(200);res.end('<b>Hello World!</b>');}).listen(9898);
 
@@ -16,10 +16,11 @@ const wss = new WebSocketServer({ server });
 
 wss.on('connection', function connection(ws) {
   ws.on('message', function message(data) {
-    console.log('received: %s', data);
+    console.log('received: %s', JSON.parse(data));
+    
   });
   
-  ws.send('something');
+  ws.send('RECEIVED');
 });
 
 

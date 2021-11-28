@@ -74,10 +74,10 @@ class https_client : public QObject
 private:
     QNetworkAccessManager m_manager;
 public:
-    explicit https_client(QObject *parent = 0){
+    explicit https_client(QObject *parent = 0):m_manager(){
 
     };
-    Q_INVOKABLE void testConn(){
+    Q_INVOKABLE void fetchCars(){
 
         //QObject::connect(manager, &QNetworkAccessManager::finished,
          //       this,&https_client::handleResponse);
@@ -93,8 +93,11 @@ public:
         conf.setPeerVerifyMode(QSslSocket::VerifyNone);
         request.setSslConfiguration(conf);
         request.setUrl(QUrl("https://192.168.1.4/cars"));
+
+
         request.setHeader(QNetworkRequest::ServerHeader, "application/json");
         auto reply = m_manager.get(request);
+
         QObject::connect(reply, &QNetworkReply::finished, [=](){
             QVariantList tempcars;
             if(reply->error() == QNetworkReply::NoError){
@@ -110,8 +113,10 @@ public:
                     }
 
                 }
-                else
-                    qDebug() << reply->error();
+            else{
+
+                emit errorOccured(reply->error());
+            }
                 reply->deleteLater();
         });
 
@@ -123,6 +128,7 @@ public:
 
 
         QNetworkRequest request;
+
         //Since our certificate is self-signed, we need to ignore SSL verification
         QSslConfiguration conf = request.sslConfiguration();
         conf.setPeerVerifyMode(QSslSocket::VerifyNone);
@@ -145,7 +151,16 @@ public:
  signals:
     void data_gathered(QVariantList list);
     Q_SIGNAL void replyAvailable(const QString & reply);
+    void errorOccured(QNetworkReply::NetworkError error_msg);
 public slots:
+    void handleErrors(QNetworkReply *reply, const QList<QSslError> &errors){
+        for(auto& err : errors){
+            qDebug()<< err;
+        }
+        qDebug()<< reply->errorString();
+        reply->deleteLater();
+        emit errorOccured(reply->error());
+    }
     void handleResponse(){
         QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
         if(reply->error() == QNetworkReply::NoError){

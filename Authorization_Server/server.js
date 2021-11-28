@@ -43,7 +43,7 @@ const authenticate = async(id,passwd) =>{
         $and: [{ _id : cid }, { password: passwd }]
       }).toArray();
     
-      
+     //console.log(items); 
 
      client.close();
      return items;
@@ -74,11 +74,10 @@ app.post('/authenticate', function(request, response){
             /*
                 user authenticated
                 Now we have to
-                1. Generate token for this specific car _id
-                2. Save this token for this specific car
-                3. Send this back as response
-                
-                
+                1. Generate secret for this specific car _id
+                2. Save this secret for this specific car
+                3. Generate token using that secret
+                4. Send this token as response
              */
             const newSecret = twofactor.generateSecret({ name: "IoTparking", account: request.body._id });
             

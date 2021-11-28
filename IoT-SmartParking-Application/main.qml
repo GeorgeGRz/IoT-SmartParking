@@ -26,12 +26,19 @@ Window {
 
 
         //on load of the main app, connect to fetch the available cars
-        client.testConn();
+        client.fetchCars();
 
     }
     Https_client{
         id : client;
+        onErrorOccured:function(errCode){
+            if(errCode == 499)
+            {
+                popup.txt = "Can't connect to remote host.Connect and try again!";
 
+                popup.open();
+            }
+        }
     }
 
     StackView {
@@ -70,6 +77,32 @@ Window {
            }
        }*/
 
+
+    Popup {
+            id: popup
+            property alias txt : errorText.text
+            parent: Overlay.overlay
+
+           x: Math.round((parent.width - width) / 2)
+           y: Math.round((parent.height - height) / 2)
+           Column{
+                    Text{
+                        id : errorText
+                   text:""
+                   color: "black"
+                  }
+                   Button{
+                       text:"Close"
+                       onClicked: Qt.quit();
+                   }}
+
+
+           width: parent.width
+           height: parent.height
+            modal: true
+            focus: true
+            closePolicy: Popup.CloseOnPressOutside
+        }
     ListView {
          id: p1scores
          model: myModel

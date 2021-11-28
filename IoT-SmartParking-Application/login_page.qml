@@ -42,11 +42,11 @@ Item {
             item1.txt = "<b>"+jsonResult.message+"</b>";
         }
         else{
-            console.log(jsonResult.message);
+            console.log(jsonResult.message.token);
             statusLabel.text = " "
 
             //create websocket to connect to the client
-            secureWebSocket.sendTextMessage("...");
+            secureWebSocket.sendTextMessage(result);
         }
 
         //TODO: ADD RESULT
@@ -59,13 +59,16 @@ Item {
                                 console.log("Error: " + secureWebSocket.errorString)
 
                             } else if (secureWebSocket.status == CWebsocket.Closed) {
-                                messageBox.text += "\nSecure socket closed"
+                                console.log( "\nSecure socket closed")
+
                             }
            active: false
        }
 
 
     id: item1
+    //Once the component is initialized, we connect the signal coming from HTTPS_Client into resultHandler function
+    //This signal returns once user tries to login and upon completion, it returns the result in JSON format.
     Component.onCompleted:  client.replyAvailable.connect(resultHandler)
     property alias cancelButton: cancelButton
     property alias loginButton: loginButton
