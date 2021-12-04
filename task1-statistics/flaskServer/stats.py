@@ -47,18 +47,18 @@ def timestampStats():
     
     days2 = list(daysDict.keys())
     people = list(daysDict.values())
-    fig = plt.figure(figsize = (10, 5))
+    #fig = plt.figure(figsize = (10, 5))
     
     # creating the bar plot
-    plt.bar(days2, people, color ='maroon',
-            width = 0.4)
-    print(json.dumps(people))
-    plt.xlabel("Courses offered")
-    plt.ylabel("No. of students enrolled")
-    plt.title("Students enrolled in different courses")
+    #plt.bar(days2, people, color ='maroon',
+           # width = 0.4)
+    #print(json.dumps(people))
+    #plt.xlabel("Courses offered")
+    #plt.ylabel("No. of students enrolled")
+    #plt.title("Students enrolled in different courses")
     print(json.dumps(daysDict))
-    plt.show()
-    return 
+    #plt.show()
+    return daysDict
 
 
 
