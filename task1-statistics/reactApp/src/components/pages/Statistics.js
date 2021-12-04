@@ -88,7 +88,7 @@ function Statistics(){
             width={350}
             height={350}
             options={{
-              maintainAspectRatio: true,
+              maintainAspectRatio: false,
             }}
           />
         )}
