@@ -40,7 +40,7 @@ def timestampStats():
     print("CURRENT WEEK "+ str(today) + "\tPREVIOUS WEEK " + str(previous_week) + "\n")
     for doc in collection:
         #print("ENTRY WEEK " + str(doc['entry'].date()))
-        if doc['entry'].date() >= previous_week:
+        if doc['entry'].date() >= previous_week and doc['entry'].date() <= today:
             print("\tENTRY IN PREVIOUS WEEK " + str(doc['entry'].date()))
             daysDict[days[doc['entry'].weekday()]]+=1
         
