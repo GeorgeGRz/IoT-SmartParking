@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 import dateutil
 import matplotlib.dates as md
-client = pymongo.MongoClient("mongodb+srv://moustakas:123123ASDmi@cluster0.giimj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+client = pymongo.MongoClient("mongodb+srv://name:passwd@cluster0.giimj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 
 db = client.get_database("parking")
 
