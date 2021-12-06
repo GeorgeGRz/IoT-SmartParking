@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 import dateutil
 import matplotlib.dates as md
-client = pymongo.MongoClient("mongodb+srv://moustakas:123123ASDmi@cluster0.giimj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+client = pymongo.MongoClient("mongodb+srv://name:passwd@cluster0.giimj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
 
 db = client.get_database("parking")
 
@@ -60,5 +60,15 @@ def timestampStats():
     #plt.show()
     return daysDict
 
-
+#Find from all the cars which day is used the most
+def DayPercentage():
+	data = db.get_collection("Car").find({ })
+	print("Found cars")
+	all_cars=0
+	for doc in data:
+		daysDict[days[doc['entry'].weekday()]]+=1
+		all_cars+=1
+	for temp in daysDict:
+		daysDict[temp] = daysDict[temp] / all_cars
+	return daysDict
 
