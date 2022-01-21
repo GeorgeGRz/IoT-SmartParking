@@ -7,8 +7,8 @@
 
 .home,
 .statistics,
-.car,
-.register {
+.car
+{
   display: flex;
   height: 90vh;
   align-items: center;
@@ -33,7 +33,7 @@
   color: #fff;
   font-size: 100px;
 }
-
+/*
 .register {
   background-image: url('/images/img-8.jpg');
   background-position: center;
@@ -41,4 +41,54 @@
   background-repeat: no-repeat;
   color: #fff;
   font-size: 100px;
+}
+*/
+.form{
+  text-align: center;
+  background-color:white;
+}
+.formlabel{
+  display: block;
+  font-size: larger;
+  color: black;
+  padding: 5px;
+}
+ 
+.forminput{
+  font-size: larger;
+  padding: 5px;
+  margin: 2px;
+  
+}
+.formbtn{
+  color: white;
+  background-color: black;
+  border-radius: 5px;
+  font-size: larger;
+  display: block;
+  padding: 5px;
+  margin: 10px auto;
+}
+ 
+.messages{
+  display: flex;
+  justify-content: center;
+}
+ 
+.error{
+  display: block;
+  background-color: red;
+  color: white;
+  width: fit-content;
+  height: 50px;
+  padding: 5px;
+}
+ 
+.success{
+  display: block;
+  background-color: lightblue;
+  color: black;
+  width: fit-content;
+  height: 50px;
+  padding: 5px;
 }
