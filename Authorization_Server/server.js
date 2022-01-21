@@ -1,13 +1,13 @@
 const express = require('express')
-const { MongoClient } = require('mongodb');
-const uri = require("./conf.js").uri;
-var mongoose = require('mongoose');
+const util = require("./utility")
+const cors = require('cors');
+
 const twofactor = require("node-2fa");
 var qs = require('querystring');
 
 const app = express()
 const port = 3030
-
+app.use(cors())
 app.get('/', (req, res) => res.send('Hello World!'))
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
@@ -17,87 +17,6 @@ app.use(express.urlencoded());
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
 
-const findItems = async() => {
-    const client = await MongoClient.connect(uri, { 
-        useNewUrlParser: true, 
-        useUnifiedTopology: true,
-    });
-    // specify the DB's name
-    const db = client.db('parking');
-    // execute find query
-    const items = await db.collection('Car').find({}).project({carId:1, carIp:1,_id :1 }).toArray();
-    // close connection
-    
-    client.close();
-    
-    return items;
-}
-
-const authenticate = async(id,passwd) =>{
-    const client = await MongoClient.connect(uri, { 
-        useNewUrlParser: true, 
-        useUnifiedTopology: true,
-    });
-    const db = client.db('parking');
-    var cid = mongoose.Types.ObjectId(id);
-    const items = await db.collection('Car').find({
-        $and: [{ _id : cid }, { password: passwd }]
-      }).toArray();
-    
-     //console.log(items); 
-
-     client.close();
-     return items;
-}
-
-const updateSecret = async(id,secret) => {
-    const client = await MongoClient.connect(uri, { 
-        useNewUrlParser: true, 
-        useUnifiedTopology: true,
-    });
-    const db = client.db('parking');
-    var cid = mongoose.Types.ObjectId(id);
-    const items = await db.collection('Car').updateOne(
-        { _id: cid  },
-        {
-          $set: { 'secret': secret},
-        });
-    client.close();
-    return items;
-}
-
-const verifySecret = async(id) => {
-    const client = await MongoClient.connect(uri, { 
-        useNewUrlParser: true, 
-        useUnifiedTopology: true,
-    });
-    const db = client.db('parking');
-    var cid = mongoose.Types.ObjectId(id);
-
-    const items = await db.collection('Car').find({_id:cid}).project({carId:1,secret : 1 }).toArray();
-
-    client.close();
-
-    return items;
-
-}
-
-const updateVerificationFlag = async(id,value)=>{
-    const client = await MongoClient.connect(uri, { 
-        useNewUrlParser: true, 
-        useUnifiedTopology: true,
-    });
-    const db = client.db('parking');
-    var cid = mongoose.Types.ObjectId(id);
-    const items = await db.collection('Car').updateOne(
-    { _id: cid  },
-    {
-        $set: { 'authenticated': value},
-    });
-    client.close();
-
-    return items;
-}
 
 
 app.get('/cars', function(req,res){
@@ -105,21 +24,38 @@ app.get('/cars', function(req,res){
     
     res.contentType('application/json');
     //res.send(JSON.stringify({"cars":result}));
-    findItems().then((value) => res.send(JSON.stringify({"cars":value})));
+    util.findItems().then((value) => {res.send(JSON.stringify({"cars":value}))});
+    
+});
+
+
+app.post("/register",function(req,res){
+    console.log("REGISTER " + req.body.user_passwd);
+     util.registerVehicle(req.body.carId,req.body.user_passwd).then((value)=>res.send(JSON.stringify({"status":"Car registered succesfully"})));
+});
+
+app.post("/nodes",function(req,res){
+    console.log("NODES " + req.body);
+    util.getNodes().then((value)=>{console.log(value);res.send(JSON.stringify({"status":"1",nodes:value}))});
+});
+
+app.post("/update",function(req,res){
+    console.log("UPDATE " + req.body);
     
 });
 
 app.post('/verify',function(request,response){
-    console.log("/VERIFY RECEIVED " + request.body["_id"] +" "+ request.body["token"]);
+    console.log("VERIFY  " + request.body["_id"] +" "+ request.body["token"]);
     
-    verifySecret(request.body["_id"]).then((value)=>{
+    util.verifySecret(request.body["_id"]).then((value)=>{
         if(twofactor.verifyToken(value[0].secret.secret,request.body["token"]) === null){
-            updateVerificationFlag(request.body["_id"],false);
-            response.send(JSON.stringify({"status":"Wrong token, user unidentified!"}))
+            util.updateVerificationFlag(request.body["_id"],false);
+            //wrong token
+            response.send(JSON.stringify({"status":"0"}))
         }
         else{
-            updateVerificationFlag(request.body["_id"],true);
-            response.send(JSON.stringify({"status":"User verified"}));
+            util.updateVerificationFlag(request.body["_id"],true);
+            response.send(JSON.stringify({"status":"1"}));
         }
         
     })
@@ -127,8 +63,8 @@ app.post('/verify',function(request,response){
     
 });
 app.post('/authenticate', function(request, response){
-    console.log(request.body);
-    authenticate(request.body._id,request.body.passwd).then((value)=>{
+    console.log("AUTHENTICATE " + request.body);
+    util.authenticate(request.body._id,request.body.passwd).then((value)=>{
         if(value.length == 0){
             response.json({
                 status:false,
@@ -147,7 +83,7 @@ app.post('/authenticate', function(request, response){
              */
             const newSecret = twofactor.generateSecret({ name: "IoTparking", account: request.body._id });
             
-            updateSecret(request.body._id,newSecret);
+            util.updateSecret(request.body._id,newSecret);
             const newToken = twofactor.generateToken(newSecret.secret);
             console.log(newToken);
             response.json({
