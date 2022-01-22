@@ -17,7 +17,7 @@
 }
 
 .statistics {
-  background-image: url('/images/img-2.jpg');
+  background-image: url('/src/images/img-2.jpg');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -26,23 +26,42 @@
 }
 
 .car {
-  background-image: url('/images/img-1.jpg');
+  background-image: url('/src/images/img-1.jpg');
   background-position: center;
   background-size: fill;
   background-repeat: no-repeat;
   color: #fff;
   font-size: 100px;
 }
-/*
-.register {
-  background-image: url('/images/img-8.jpg');
+
+.login
+{
+  background-image: url('/src/images/img-9.jpg');
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
   color: #fff;
   font-size: 100px;
 }
-*/
+
+.register {
+  background-image: url('/src/images/img-6.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #fff;
+  font-size: 100px;
+}
+
+.useracc {
+  background-image: url('/src/images/img-4.jpg');
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #fff;
+  font-size: 100px;
+}
+
 .form{
   text-align: center;
   background-color:white;

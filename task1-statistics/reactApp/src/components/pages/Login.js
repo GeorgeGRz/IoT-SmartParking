@@ -43,16 +43,21 @@ export default function Login() {
         },
         body: JSON.stringify({ carId: email, user_passwd : password })
     };
-    fetch('https://127.0.0.1:3030/login', requestOptions)
-        .then(response => {console.log(response.json());setSubmitted(true);})
-        .then(data => this.setState({ postId: 0 }));
+    fetch('https://192.168.1.2/login', requestOptions)
+        .then((response) => response.json()) //2
+        .then((login_data) => {
+            if(login_data.status == true)
+                setSubmitted(true)
+            else
+                setError(true)
+        });
       setError(false);
     }
   };
  
   // Showing success message
    const successMessage = () => {
-     return (
+     /*return (
       // <div
       //   className="success"
       //   style={{
@@ -60,14 +65,18 @@ export default function Login() {
       //   }}>
       //   <h1>User {email} successfully registered!!</h1>
       // </div>
-      <Route exact path="/" render={() => (
+      /*<Route exact path="/" render={() => (
         submitted ? (
           <Redirect to="/useracc"/>
         ) : (
           <Useracc/>
         )
       )}/>
-    );
+      
+    );*/
+      if(submitted)
+          return <Redirect to="/useracc"/>
+    
   };
  
   // Showing error message if error is true
@@ -78,7 +87,7 @@ export default function Login() {
         style={{
           display: error ? '' : 'none',
         }}>
-        <h1>Please enter all the fields</h1>
+        <h1>Please enter all the fields or check username/password</h1>
       </div>
     );
   };

@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../App.css';
 import { useState } from 'react';
+
 export default function Register() {
  
   // States for registration
