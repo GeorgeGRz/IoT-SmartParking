@@ -48,7 +48,22 @@ const authenticate = async(id,passwd) =>{
      client.close();
      return items;
 }
+const login = async(id,passwd)=>{
+	const client = await MongoClient.connect(uri, { 
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+    });
+    const db = client.db('parking');
+    const items = await db.collection('Car').find({
+        $and: [{ carId : id }, { password: passwd }]
+      }).toArray();
+    
+     console.log(items); 
 
+     client.close();
+     return items;
+}
+	
 const updateSecret = async(id,secret) => {
     const client = await MongoClient.connect(uri, { 
         useNewUrlParser: true, 
@@ -118,4 +133,4 @@ const registerVehicle = async(carName,carPasswd)=>{
 
 }
 
-module.exports = {findItems,getNodes,authenticate,updateSecret,verifySecret,updateVerificationFlag, registerVehicle}
+module.exports = {login,findItems,getNodes,authenticate,updateSecret,verifySecret,updateVerificationFlag, registerVehicle}
