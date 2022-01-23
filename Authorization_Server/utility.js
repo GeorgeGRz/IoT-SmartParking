@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 const uri = require("./conf.js").uri;
 const { MongoClient } = require('mongodb');
+
+
 const findItems = async() => {
     const client = await MongoClient.connect(uri, { 
         useNewUrlParser: true, 
@@ -9,7 +11,7 @@ const findItems = async() => {
     // specify the DB's name
     const db = client.db('parking');
     // execute find query
-    const items = await db.collection('Car').find({}).project({carId:1,_id :1,parked:1 }).toArray();
+    const items = await db.collection('cars').find({}).project({carId:1,_id :1,parked:1 }).toArray();
     // close connection
     
     client.close();
@@ -32,6 +34,7 @@ const getNodes = async() => {
     return items;
 }
 
+/*
 const authenticate = async(id,passwd) =>{
     const client = await MongoClient.connect(uri, { 
         useNewUrlParser: true, 
@@ -58,8 +61,6 @@ const login = async(id,passwd)=>{
         $and: [{ carId : id }, { password: passwd }]
       }).toArray();
     
-     console.log(items); 
-
      client.close();
      return items;
 }
@@ -112,7 +113,7 @@ const updateVerificationFlag = async(id,value)=>{
 
     return items;
 }
-
+*/
 const registerVehicle = async(carName,carPasswd)=>{
     const client = await MongoClient.connect(uri, { 
         useNewUrlParser: true, 
@@ -133,4 +134,4 @@ const registerVehicle = async(carName,carPasswd)=>{
 
 }
 
-module.exports = {login,findItems,getNodes,authenticate,updateSecret,verifySecret,updateVerificationFlag, registerVehicle}
+module.exports = {findItems,getNodes, registerVehicle}
