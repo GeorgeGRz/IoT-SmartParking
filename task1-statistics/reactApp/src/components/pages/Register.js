@@ -47,8 +47,14 @@ export default function Register() {
         body: JSON.stringify({ carId: name, user_passwd : password })
     };
     fetch('https://192.168.1.2/register', requestOptions)
-        .then(response => {console.log(response.json());setSubmitted(true);})
-        .then(data => this.setState({ postId: 0 }));
+        .then((response) => response.json()) //2
+        .then((login_data) => {
+            console.log(login_data);
+            if(login_data.status == true)
+                setSubmitted(true)
+            else
+                setError(true)
+        });
       setError(false);
     }
   };
@@ -74,7 +80,7 @@ export default function Register() {
         style={{
           display: error ? '' : 'none',
         }}>
-        <h1>Please enter all the fields</h1>
+        <h1>Please enter all the fields or user exists</h1>
       </div>
     );
   };

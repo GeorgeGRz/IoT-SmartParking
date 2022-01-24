@@ -46,6 +46,7 @@ export default function Login() {
     fetch('https://192.168.1.2/login', requestOptions)
         .then((response) => response.json()) //2
         .then((login_data) => {
+            console.log(login_data);
             if(login_data.status == true)
                 setSubmitted(true)
             else
