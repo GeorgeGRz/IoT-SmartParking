@@ -7,29 +7,7 @@
 #include <QQuickView>
 #include "qqmlcontext.h"
 
-/*
-void https_client::handleResponse(QNetworkReply *reply){
-    QVariantList tempcars;
-    if(reply->error() == QNetworkReply::NoError){
-            QByteArray result = reply->readAll();
-            QJsonDocument jsonResponse = QJsonDocument::fromJson(result);
-            QJsonObject obj = jsonResponse.object();
 
-            QJsonArray array = obj["cars"].toArray();
-
-            for(const QJsonValue & value : array) {
-                model->addDevice(device(value["carId"].toString(), QHostAddress(value["carIp"].toString()),value["_id"].toString()));
-
-            }
-
-        }
-        else
-            qDebug() << reply->error();
-        reply->deleteLater();
-
-
-
-}*/
 
 deviceModel::deviceModel(QObject *parent): QAbstractListModel(parent)
 {
@@ -54,8 +32,8 @@ QVariant deviceModel::data(const QModelIndex & index, int role) const {
     const device &animal = m_devices[index.row()];
     if (role == nameRole)
         return animal.name();
-    else if (role == ipRole)
-        return animal.ipaddr();
+    else if (role == parkedRole)
+        return animal.parked();
     else if (role == idRole)
         return animal.id();
     return QVariant();

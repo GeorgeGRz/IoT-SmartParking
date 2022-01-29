@@ -174,6 +174,10 @@ bool customwebsocket::isActive() const
 {
     return m_isActive;
 }
+void customwebsocket::reconnect(){
+    m_webSocket->abort();
+    open();
+}
 void customwebsocket::open()
 {
     if (m_componentCompleted && m_isActive && m_url.isValid() && Q_LIKELY(m_webSocket)) {

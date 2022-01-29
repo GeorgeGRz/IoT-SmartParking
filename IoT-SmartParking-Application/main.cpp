@@ -8,8 +8,9 @@
 #include <QQuickItem>
 
 #include "customwebsocket.h"
+#include "nodeModel.h"
 deviceModel * model;
-
+nodeModel * nModel;
 int main(int argc, char *argv[])
 {
 #if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
@@ -33,10 +34,10 @@ int main(int argc, char *argv[])
 
     model = new deviceModel{};
 
-
+    nModel = new nodeModel{};
     auto ctxt = engine.rootContext();
     ctxt->setContextProperty("myModel", model);
-
+    ctxt->setContextProperty("nodesModel", nModel);
 
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
@@ -45,14 +46,14 @@ int main(int argc, char *argv[])
     }, Qt::QueuedConnection);
     engine.load(url);
 
-
+    /*
     auto wind = qobject_cast<QQuickWindow*>(engine.rootObjects().at(0));
     //qDebug() << "Property value:" << QQmlProperty::read(wind, "url").toString();
    QObject *rect = wind->findChild<QObject*>("label");
     if (rect){
         qDebug()<< "FOUND";
     }
-
+    */
     /*
 
     QQmlComponent component(&engine, QUrl("qrc:/test.qml"));

@@ -14,13 +14,13 @@
 struct device{
 private:
     QString deviceName;
-    QHostAddress deviceIP;
     QString device_id;
+    bool car_parked;
 public:
     QString name() const{return deviceName;}
     QString id() const {return device_id;}
-    QString ipaddr() const{return deviceIP.toString();}
-    device(QString name, QHostAddress ip,QString unique_id):deviceName(name),deviceIP(ip),device_id(unique_id){
+    bool parked()const{return car_parked;}
+    device(QString name,QString unique_id,bool isParked):deviceName(name),device_id(unique_id),car_parked(isParked){
         ;
     }
 
@@ -31,7 +31,7 @@ Q_OBJECT
 public:
     enum DeviceRoles {
             nameRole,
-            ipRole,
+            parkedRole,
             idRole
         };
     deviceModel(QObject *parent = 0);
@@ -41,7 +41,7 @@ public:
     QHash<int,QByteArray> roleNames()const{
        QHash<int, QByteArray> roles;
        roles[nameRole] = "name";
-       roles[ipRole] = "ipaddr";
+       roles[parkedRole] = "parked";
        roles[idRole] = "id";
        return roles;
     }
@@ -66,8 +66,9 @@ private:
 
 #include "QJsonArray"
 #include "qqmlcontext.h"
-
+#include "nodeModel.h"
 extern deviceModel * model;
+extern nodeModel * nModel;
 class https_client : public QObject
 {
     Q_OBJECT
@@ -77,6 +78,45 @@ public:
     explicit https_client(QObject *parent = 0):m_manager(){
 
     };
+    Q_INVOKABLE void fetchNodes(QString carID){
+        QNetworkRequest request;
+
+        //Since our certificate is self-signed, we need to ignore SSL verification
+        QSslConfiguration conf = request.sslConfiguration();
+        conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+        request.setSslConfiguration(conf);
+        request.setUrl(QUrl("https://192.168.1.2/nodes"));
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        QJsonObject obj;
+        obj["_id"] = carID;
+        QJsonDocument doc(obj);
+        QByteArray data = doc.toJson();
+
+        QNetworkReply *reply = m_manager.post(request, data);
+        QObject::connect(reply, &QNetworkReply::finished, [=](){
+            QVariantList tempcars;
+            if(reply->error() == QNetworkReply::NoError){
+                    QByteArray result = reply->readAll();
+                    QJsonDocument jsonResponse = QJsonDocument::fromJson(result);
+                    QJsonObject obj = jsonResponse.object();
+                    //qDebug()<<obj;
+                    QJsonArray array = obj["nodes"].toArray();
+
+                    for(const QJsonValue & value : array) {
+                        //model->addDevice(device(value["carId"].toString(), QHostAddress(value["carIp"].toString()),value["_id"].toString()));
+                        qDebug() << value["nodeRow"].toInt();
+                        nModel->addModel(node(value["carId"].toString(),value["nodeRow"].toInt(),value["nodeCol"].toInt(),value["occupied"].toBool()));
+                    }
+
+                }
+            else{
+
+                emit errorOccured(reply->error());
+            }
+                reply->deleteLater();
+        });
+    }
+
     Q_INVOKABLE void fetchCars(){
 
         //QObject::connect(manager, &QNetworkAccessManager::finished,
@@ -92,7 +132,7 @@ public:
         QSslConfiguration conf = request.sslConfiguration();
         conf.setPeerVerifyMode(QSslSocket::VerifyNone);
         request.setSslConfiguration(conf);
-        request.setUrl(QUrl("https://192.168.1.4/cars"));
+        request.setUrl(QUrl("https://192.168.1.2/cars"));
 
 
         request.setHeader(QNetworkRequest::ServerHeader, "application/json");
@@ -108,7 +148,8 @@ public:
                     QJsonArray array = obj["cars"].toArray();
 
                     for(const QJsonValue & value : array) {
-                        model->addDevice(device(value["carId"].toString(), QHostAddress(value["carIp"].toString()),value["_id"].toString()));
+                        qDebug() << value;
+                        model->addDevice(device(value["carId"].toString(),value["_id"].toString(),value["parked"].toBool()));
 
                     }
 
@@ -133,12 +174,12 @@ public:
         QSslConfiguration conf = request.sslConfiguration();
         conf.setPeerVerifyMode(QSslSocket::VerifyNone);
         request.setSslConfiguration(conf);
-        request.setUrl(QUrl("https://192.168.1.4/authenticate"));
+        request.setUrl(QUrl("https://192.168.1.2/login"));
         request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
         int code = 0;
         QJsonObject obj;
-        obj["_id"] = devName;
-        obj["passwd"] = passwd;
+        obj["carId"] = devName;
+        obj["user_passwd"] = passwd;
         QJsonDocument doc(obj);
         QByteArray data = doc.toJson();
 

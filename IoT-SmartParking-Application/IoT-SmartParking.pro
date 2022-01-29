@@ -32,7 +32,9 @@ ANDROID_EXTRA_LIBS += \
 
 HEADERS += \
     customwebsocket.h \
-    https_client.h
+    https_client.h \
+    node.h \
+    nodeModel.h
 
 
 HEADERS +=

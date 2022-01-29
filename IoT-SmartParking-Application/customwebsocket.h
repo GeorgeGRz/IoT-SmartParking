@@ -33,6 +33,7 @@ public:
         Closed      = 3,
         Error       = 4
     };
+    Q_INVOKABLE void reconnect();
     Q_ENUM(Status)
     QUrl url() const;
     void setUrl(const QUrl &url);
@@ -49,6 +50,7 @@ Q_SIGNALS:
     void activeChanged(bool isActive);
     void errorStringChanged(QString errorString);
     void urlChanged();
+
 public:
     void classBegin() override;
     void componentComplete() override;

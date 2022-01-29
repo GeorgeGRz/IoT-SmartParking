@@ -36,35 +36,31 @@ import QtQuick.Controls
 import QtQuick.Layouts
 Item {
     function resultHandler(result) {
-
+        console.log("IS PARKED : " +  myModel.get(p1scores.currentIndex).parked)
+        console.log(result)
         var jsonResult = JSON.parse(result.toString())
         if(jsonResult.status === false){
             item1.txt = "<b>"+jsonResult.message+"</b>";
         }
         else{
-            console.log(jsonResult.message.token);
+            //console.log("RECEIVED TOKEN FROM REMOTE : " + jsonResult.message.token);
             statusLabel.text = " "
+            var jsonObj = {};
+            //jsonObj["_id"] = myModel.get(p1scores.currentIndex).id;
+            //jsonObj["token"] = jsonResult.message.token;
+            //console.log(result);
+            //Send JSON object containing the ID and token to the websocket server
+            if(myModel.get(p1scores.currentIndex).parked === false){
+                stack.push("qrc:/nodesPage.qml");
+            }
+            else{
+                stack.push("qrc:/userPage.qml");
+            }
 
-            //create websocket to connect to the client
-            secureWebSocket.sendTextMessage(result);
+            //secureWebSocket.sendTextMessage(JSON.stringify(jsonObj));
         }
-
         //TODO: ADD RESULT
     }
-    CWebsocket {
-           id: secureWebSocket
-           url: "wss://192.168.1.4:9898"
-           onTextMessageReceived: function(message) { console.log(message); }
-           onStatusChanged: if (secureWebSocket.status == CWebsocket.Error) {
-                                console.log("Error: " + secureWebSocket.errorString)
-
-                            } else if (secureWebSocket.status == CWebsocket.Closed) {
-                                console.log( "\nSecure socket closed")
-
-                            }
-           active: false
-       }
-
 
     id: item1
     //Once the component is initialized, we connect the signal coming from HTTPS_Client into resultHandler function
@@ -174,8 +170,8 @@ Item {
                 height: 30
                 text: qsTr("Login")
                 onClicked:{
-                    client.authenticate( myModel.get(p1scores.currentIndex).id,password.text);
-                    secureWebSocket.active=true
+                    client.authenticate( myModel.get(p1scores.currentIndex).name,password.text);
+                    //secureWebSocket.active=true
                 }
             }
 

@@ -12,9 +12,8 @@ Window {
 
     Component{
         id : loginView
+
         Loader {
-
-
             source:"login_page.qml";
           }
 
@@ -22,9 +21,6 @@ Window {
 
 
     Component.onCompleted:{
-
-
-
         //on load of the main app, connect to fetch the available cars
         client.fetchCars();
 
@@ -46,7 +42,16 @@ Window {
            id: stack
            initialItem: p1scores
            anchors.fill: parent
-
+            focus: true
+            Keys.onReleased:(event)=> {
+                if (event.key == Qt.Key_Back || event.key == Qt.Key_Backspace) {
+                    console.log("Back button captured - wunderbar !")
+                    event.accepted = true
+                    if(depth > 0){
+                        pop();
+                    }
+                }
+            }
        }
        /*
        Component {
@@ -126,7 +131,7 @@ Window {
                 width: parent.width; height: 40
                 Column {
                     Text { text: '<b>Device Name:</b> ' + name }
-                     Text { text: '<b>Ip Address:</b> ' + ipaddr }
+                     Text { text: '<b>Parked:</b> ' + parked }
                 }
                 MouseArea {
                     anchors.fill: parent

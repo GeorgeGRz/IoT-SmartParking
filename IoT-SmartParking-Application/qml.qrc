@@ -2,6 +2,7 @@
     <qresource prefix="/">
         <file>main.qml</file>
         <file>login_page.qml</file>
-        <file>test.qml</file>
+        <file>nodesPage.qml</file>
+        <file>userPage.qml</file>
     </qresource>
 </RCC>
