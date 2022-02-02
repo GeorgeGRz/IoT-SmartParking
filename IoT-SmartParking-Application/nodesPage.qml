@@ -1,10 +1,25 @@
 import QtQuick 2.0
 
 Item {
+
+    function reservationReplyHandler(reply){
+        console.log(reply);
+        var jsonResult = JSON.parse(reply.toString())
+        if(jsonResult.status === true){
+            console.log("OK");
+            nodesModel.clear();
+            myModel.clear();
+            client.fetchCars();
+            stack.pop(null)
+
+        }
+    }
+
     Component.onCompleted: {
         //nodesModel.add("a","b","c",true)
         //console.log(myModel.get(p1scores.currentIndex).name)
         client.fetchNodes("1");
+        client.reservationReply.connect(reservationReplyHandler)
     }
 
     GridView {
@@ -43,7 +58,9 @@ Item {
 
                     onClicked: {
                         parent.GridView.view.currentIndex = index
-                        console.log("ITS NOT OCCUPIED")
+                        console.log("RESERVING FOR "+ myModel.get(p1scores.currentIndex).name+ " AT " +row + " " + col )
+                        var txt=row.toString()+col.toString();
+                        client.reserveSeat(txt,myModel.get(p1scores.currentIndex).name)
                     }
                 }
 

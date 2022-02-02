@@ -2,39 +2,24 @@ import QtQuick 2.0
 import QtQuick.Controls
 
 import CWebsocket
-/*Item {
-    id : loginPage
-    Column {
-        spacing: 10
 
-       Button {
-            id: backBTN
-            text: "<"
-            enabled: stack.depth > 1
-            onClicked: stack.pop()
-
-        }
-        Text {
-
-            text: "<b>Device ID</b> : " + myModel.get(p1scores.currentIndex).name
-        }
-        Row{
-
-            Text{
-                text: "<b>Enter Password: </b>"
-            }
-            TextField {
-
-                echoMode: TextInput.Password
-
-            }
-        }
-    }
-}*/
 import QtQuick 2.0
 import QtQuick.Controls
 import QtQuick.Layouts
 Item {
+    function connectedHandler(result){
+        console.log("X");
+
+        var jsonResult = JSON.parse(result.toString())
+        console.log(jsonResult.parked)
+        if(jsonResult.parked === false){
+            stack.push("qrc:/nodesPage.qml");
+        }
+        else{
+            stack.push("qrc:/userPage.qml");
+        }
+    }
+
     function resultHandler(result) {
         console.log("IS PARKED : " +  myModel.get(p1scores.currentIndex).parked)
         console.log(result)
@@ -50,12 +35,15 @@ Item {
             //jsonObj["token"] = jsonResult.message.token;
             //console.log(result);
             //Send JSON object containing the ID and token to the websocket server
-            if(myModel.get(p1scores.currentIndex).parked === false){
-                stack.push("qrc:/nodesPage.qml");
-            }
-            else{
-                stack.push("qrc:/userPage.qml");
-            }
+            client.checkParked(myModel.get(p1scores.currentIndex).name);
+
+
+            //if(myModel.get(p1scores.currentIndex).parked === false){
+              //  stack.push("qrc:/nodesPage.qml");
+            //}
+            //else{
+             //   stack.push("qrc:/userPage.qml");
+            //}
 
             //secureWebSocket.sendTextMessage(JSON.stringify(jsonObj));
         }
@@ -65,7 +53,11 @@ Item {
     id: item1
     //Once the component is initialized, we connect the signal coming from HTTPS_Client into resultHandler function
     //This signal returns once user tries to login and upon completion, it returns the result in JSON format.
-    Component.onCompleted:  client.replyAvailable.connect(resultHandler)
+    Component.onCompleted:
+    {
+        client.replyAvailable.connect(resultHandler)
+        client.carUpdated.connect(connectedHandler)
+    }
     property alias cancelButton: cancelButton
     property alias loginButton: loginButton
     //property alias userName: userName
@@ -170,6 +162,7 @@ Item {
                 height: 30
                 text: qsTr("Login")
                 onClicked:{
+
                     client.authenticate( myModel.get(p1scores.currentIndex).name,password.text);
                     //secureWebSocket.active=true
                 }

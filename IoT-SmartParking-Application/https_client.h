@@ -12,6 +12,7 @@
 #include <qeventloop.h>
 
 struct device{
+
 private:
     QString deviceName;
     QString device_id;
@@ -44,6 +45,11 @@ public:
        roles[parkedRole] = "parked";
        roles[idRole] = "id";
        return roles;
+    }
+    Q_INVOKABLE void clear(){
+        beginResetModel();
+        this->m_devices.clear();
+        endResetModel();
     }
     Q_INVOKABLE QVariantMap get(int row) {
         QHash<int,QByteArray> names = roleNames();
@@ -188,10 +194,72 @@ public:
 
 
     }
+    Q_INVOKABLE void checkParked(QString carId){
+        QNetworkRequest request;
+
+        //Since our certificate is self-signed, we need to ignore SSL verification
+        QSslConfiguration conf = request.sslConfiguration();
+        conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+        request.setSslConfiguration(conf);
+        request.setUrl(QUrl("https://192.168.1.2/carinfo"));
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        QJsonObject obj;
+        obj["carId"] = carId;
+        QJsonDocument doc(obj);
+        QByteArray data = doc.toJson();
+
+        QNetworkReply *reply = m_manager.post(request, data);
+        QObject::connect(reply, &QNetworkReply::finished, [=](){
+            QVariantList tempcars;
+            if(reply->error() == QNetworkReply::NoError){
+                QString contents = QString::fromUtf8(reply->readAll());
+                //qDebug () << contents;
+                emit carUpdated(contents);
+            }
+            else{
+
+                emit errorOccured(reply->error());
+            }
+                reply->deleteLater();
+        });
+    }
+    Q_INVOKABLE void reserveSeat(QString coordinates, QString carId){
+        QNetworkRequest request;
+
+        //Since our certificate is self-signed, we need to ignore SSL verification
+        QSslConfiguration conf = request.sslConfiguration();
+        conf.setPeerVerifyMode(QSslSocket::VerifyNone);
+        request.setSslConfiguration(conf);
+        request.setUrl(QUrl("https://192.168.1.2/reserve_seat"));
+        request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
+        QJsonObject obj;
+        obj["coordinates"] = coordinates;
+        obj["carId"] = carId;
+        QJsonDocument doc(obj);
+        QByteArray data = doc.toJson();
+
+        QNetworkReply *reply = m_manager.post(request, data);
+        QObject::connect(reply, &QNetworkReply::finished, [=](){
+            QVariantList tempcars;
+            if(reply->error() == QNetworkReply::NoError){
+                QString contents = QString::fromUtf8(reply->readAll());
+
+                emit reservationReply(contents);
+            }
+            else{
+
+                emit errorOccured(reply->error());
+            }
+                reply->deleteLater();
+        });
+    }
+
     ~https_client(){}
  signals:
     void data_gathered(QVariantList list);
     Q_SIGNAL void replyAvailable(const QString & reply);
+    Q_SIGNAL void reservationReply(const QString & reply);
+    Q_SIGNAL void carUpdated(const QString & reply);
     void errorOccured(QNetworkReply::NetworkError error_msg);
 public slots:
     void handleErrors(QNetworkReply *reply, const QList<QSslError> &errors){

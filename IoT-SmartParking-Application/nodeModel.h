@@ -16,6 +16,11 @@ public:
     nodeModel(QObject *parent = 0):QAbstractListModel(parent){
         ;
     }
+    Q_INVOKABLE void clear(){
+        beginResetModel();
+        this->m_devices.clear();
+        endResetModel();
+    }
     void addModel(const node &animal){
         //qDebug() << animal.getCol()<< " " << animal.getRow();
         beginInsertRows(QModelIndex(), rowCount(), rowCount());

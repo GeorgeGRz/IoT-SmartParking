@@ -4,6 +4,7 @@ import { useState } from 'react';
 //import { ButtonAcc } from '../ButtonAcc';
 import { Route, Redirect } from 'react-router'
 import Useracc from './Useracc';
+import Session from 'react-session-api'
 
 export default function Login() {
  
@@ -75,8 +76,11 @@ export default function Login() {
       )}/>
       
     );*/
-      if(submitted)
-          return <Redirect to="/useracc"/>
+      if(submitted){
+        Session.set("user","good");
+        return <Redirect to="/useracc"/>
+      }
+          
     
   };
  

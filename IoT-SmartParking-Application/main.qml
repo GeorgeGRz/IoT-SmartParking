@@ -131,15 +131,12 @@ Window {
                 width: parent.width; height: 40
                 Column {
                     Text { text: '<b>Device Name:</b> ' + name }
-                     Text { text: '<b>Parked:</b> ' + parked }
                 }
                 MouseArea {
                     anchors.fill: parent
                     onClicked:{
-
                         p1scores.currentIndex = index;
                         stack.push("qrc:/login_page.qml");
-
                     }
                 }
             }

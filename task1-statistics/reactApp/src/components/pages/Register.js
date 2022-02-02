@@ -1,9 +1,12 @@
 import React from 'react';
 import '../../App.css';
 import { useState } from 'react';
-
+import Session from 'react-session-api'
 export default function Register() {
- 
+  
+  console.log(Session.get("user"));
+  console.log(Session.items());
+  
   // States for registration
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');

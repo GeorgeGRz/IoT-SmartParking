@@ -10,20 +10,33 @@ const saltRounds = 10;
 var mongoose = require('mongoose');
 
 const uri = require("./conf.js").uri;
-
+const { MongoClient } = require('mongodb');
 
 mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+var minuteFromNow = function(){
+    var timeObject = new Date();
+    timeObject.setTime(timeObject.getTime() + 9*60000);
+    return timeObject;
+};
 
 var carSchema = new mongoose.Schema({
+    _id:String,
     carId: String,
     password: String,
     joined: { type: Date, default: Date.now },
-    parked : {type: Boolean, default: false}
+    parked : {type: Boolean, default: false},
+    createdAt: {
+    type: Date,
+    default: Date.now,
+    index: { expires: '9m',partialFilterExpression:{parked:false} },
+    },
   });
 const car = mongoose.model("Cars", carSchema);  
+
+//carSchema.index({expireIndex:1},{expireAfterSeconds:60,partialFilterExpression:{parked:false}});
 
 const app = express()
 const port = 3030
@@ -37,7 +50,13 @@ app.use(express.urlencoded());
 // Parse JSON bodies (as sent by API clients)
 app.use(express.json());
 
+const carData = async(cid) => { 
+  return await car.findOne({ carId: cid});
+}
+app.post("/carinfo",async (req,res)=>{
+  carData(req.body.carId).then((value)=>{res.send(JSON.stringify(value))})
 
+});
 
 app.get('/cars', function(req,res){
     
@@ -46,6 +65,15 @@ app.get('/cars', function(req,res){
     //res.send(JSON.stringify({"cars":result}));
     util.findItems().then((value) => {res.send(JSON.stringify({"cars":value}))});
     
+});
+
+
+
+app.post("/reserve_seat",async (req,res)=>{
+  console.log("SEAT RESERVATION " + req.body.coordinates +  " " + req.body.carId);
+  var row = parseInt(req.body.coordinates.charAt(0));
+  var col = parseInt(req.body.coordinates.charAt(1))
+  util.reserveSeat(row,col,req.body.carId).then((value)=>{res.send(JSON.stringify({"status":true}))});
 });
 
 
@@ -60,6 +88,7 @@ app.post("/register",async (req,res)=>{
             console.log(result)
             if(result == null){
                 const insertResult = await car.create({
+                    _id:req.body.carId,
                     carId: req.body.carId,
                     password: hashedPwd,
                   })
@@ -76,8 +105,18 @@ app.post("/register",async (req,res)=>{
       }
 
 });
+
+app.post("/update_status",function(req,res){
+  
+  console.log("NODES " + req.body.coordinates + " STATUS " + req.body.status);
+  var status = (req.body.status === 'true');
+  var row = parseInt(req.body.coordinates.charAt(0));
+  var col = parseInt(req.body.coordinates.charAt(1))
+  util.changeNodeStatus(row,col,status).then((value)=>{res.send(JSON.stringify({"status":"1",message:value}))});
+});
 app.post("/login",async (req,res)=>{
     console.log("LOGIN " + req.body.user_passwd);
+    
     /*
     OLD SEGMENT USING COLLECTION AND NOT SCHEMA
     util.login(req.body.carId,req.body.user_passwd).then((value)=>{

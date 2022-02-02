@@ -19,8 +19,22 @@ const findItems = async() => {
     return items;
 }
 
+const reserveSeat = async(row,col,carId)=>{
+    const client = await MongoClient.connect(uri, { 
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+    });   
+    const db = client.db('parking');
+    var cid = carId;
+    var nodes = await db.collection('Node').updateMany({carId: cid},{$set:{'carId':""}})
+    nodes = await db.collection('Node').updateOne({nodeRow: row, nodeCol : col},{$set:{'carId':carId}})
+
+    
+    return nodes;
+}
+
 const getNodes = async() => {
-     const client = await MongoClient.connect(uri, { 
+    const client = await MongoClient.connect(uri, { 
         useNewUrlParser: true, 
         useUnifiedTopology: true,
     });   
@@ -33,6 +47,41 @@ const getNodes = async() => {
     
     return items;
 }
+
+const changeNodeStatus = async(row,col,status) => {
+    const client = await MongoClient.connect(uri, { 
+        useNewUrlParser: true, 
+        useUnifiedTopology: true,
+    });   
+    const db = client.db('parking');
+    var items;
+    
+    const nodes = await db.collection('Node').findOne({nodeRow: row, nodeCol : col})
+
+    var carid = status? nodes.carId: ""
+
+    console.log(carid);
+
+    const carsUpd = await db.collection('cars').updateOne(
+    { _id:nodes.carId  },
+    {
+        $set: { 'parked': status},
+    });
+    
+    
+    items = await db.collection('Node').updateOne(
+        { nodeRow: row, nodeCol : col  },
+        {
+            $set: { 'occupied': status,'carId':carid},
+        });
+    
+
+    // close connection
+    client.close();
+    
+    return items;
+}
+
 
 /*
 const authenticate = async(id,passwd) =>{
@@ -134,4 +183,4 @@ const registerVehicle = async(carName,carPasswd)=>{
 
 }
 
-module.exports = {findItems,getNodes, registerVehicle}
+module.exports = {reserveSeat,changeNodeStatus,findItems,getNodes, registerVehicle}

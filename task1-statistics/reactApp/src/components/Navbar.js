@@ -55,6 +55,7 @@ function Navbar() {
                 to='/useracc'
                 className='nav-links'
                 onClick={closeMobileMenu}
+                
               >
                 Car
               </Link>

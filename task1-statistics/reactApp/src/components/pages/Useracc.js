@@ -9,7 +9,8 @@ import {
   Card, CardImg, CardText, CardBody,
   CardTitle, CardSubtitle, Button, Container, Row, Col
 } from 'reactstrap';
-
+import { Route, Redirect } from 'react-router'
+import Session from 'react-session-api'
 
 export default function Useracc() {
   const [data, setData] = useState({ nodes: [] });
@@ -33,12 +34,26 @@ export default function Useracc() {
   else{
     console.log("DATA ")
     return(
+      
       <div className="useracc">
          <Container>
             <Row xs={3}>
             {data.map((e, i) => {
-                let colr = e.occupied === false ? 'black' : "red";
-                let display = e.occupied ===true?"Occupied":"Not occupied"
+                console.log(e)
+                //let colr = e.occupied === false ? 'black' : "red";
+                let colr = ""
+                let display = ""
+                if(e.occupied){
+                  colr = "red"
+                  display = "Occupied"
+                }
+                else{
+                    if(e.carId != ""){
+                      colr = "orange";display="Reserved"
+                    }
+                    else{colr = "black";display = "Free"}
+                        
+                }
                 return (
                   <Col key={i}>
                       <Card style={{color:'white',backgroundColor:colr}}>

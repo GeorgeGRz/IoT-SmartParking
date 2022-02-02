@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 import dateutil
 import matplotlib.dates as md
-client = pymongo.MongoClient("mongodb+srv://name:passwd@cluster0.giimj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+client = pymongo.MongoClient("mongodb+srv://username:password@cluster0.giimj.mongodb.net/parking?retryWrites=true&w=majority")
 
 db = client.get_database("parking")
 
@@ -36,13 +36,15 @@ today = datetime.date.today()
 #previous_week = today - datetime.timedelta(days=7)
 previous_week = today - datetime.timedelta(days=today.weekday())
 def timestampStats():
-    collection =  db.get_collection("Car").find({ })
+    collection =  db.get_collection("cars").find({ })
     print("CURRENT WEEK "+ str(today) + "\tPREVIOUS WEEK " + str(previous_week) + "\n")
+    
     for doc in collection:
+        
         #print("ENTRY WEEK " + str(doc['entry'].date()))
-        if doc['entry'].date() >= previous_week and doc['entry'].date() <= today:
-            print("\tENTRY IN PREVIOUS WEEK " + str(doc['entry'].date()))
-            daysDict[days[doc['entry'].weekday()]]+=1
+        if doc['createdAt'].date() >= previous_week and doc['createdAt'].date() <= today:
+            print("\tENTRY IN PREVIOUS WEEK " + str(doc['createdAt'].date()))
+            daysDict[days[doc['createdAt'].weekday()]]+=1
         
     
     days2 = list(daysDict.keys())
@@ -71,4 +73,3 @@ def DayPercentage():
 	for temp in daysDict:
 		daysDict[temp] = daysDict[temp] / all_cars
 	return daysDict
-
