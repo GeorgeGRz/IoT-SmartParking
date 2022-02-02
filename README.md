@@ -25,8 +25,5 @@ By implementing this project we validate the basic points made by the IoT object
 6. Server sends back the car list.
 
 
-## Indicative IoT Architecture Schematic
-![IoT Architecture Schematic](https://user-images.githubusercontent.com/75671329/142730261-6a98ecbb-93ec-489f-aafc-513025a776d5.png)
-
 ## Overall Architecture 
 ![Overall Architecture](https://user-images.githubusercontent.com/75671329/142731802-6fcb20df-bad0-4dd8-96cc-cb1e7e298582.png)
