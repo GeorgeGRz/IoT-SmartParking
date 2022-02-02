@@ -1,12 +1,15 @@
+
 const express = require('express')
+
+
 const util = require("./utility")
+
 const cors = require('cors');
 
-const twofactor = require("node-2fa");
-var qs = require('querystring');
 
 const bcrypt = require("bcrypt")
 const saltRounds = 10;
+
 var mongoose = require('mongoose');
 
 const uri = require("./conf.js").uri;
@@ -41,6 +44,8 @@ const car = mongoose.model("Cars", carSchema);
 const app = express()
 const port = 3030
 app.use(cors())
+
+
 app.get('/', (req, res) => res.send('Hello World!'))
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`))
@@ -59,12 +64,9 @@ app.post("/carinfo",async (req,res)=>{
 });
 
 app.get('/cars', function(req,res){
-    
-    
     res.contentType('application/json');
     //res.send(JSON.stringify({"cars":result}));
     util.findItems().then((value) => {res.send(JSON.stringify({"cars":value}))});
-    
 });
 
 
