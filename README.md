@@ -9,6 +9,7 @@ By implementing this project we validate the basic points made by the IoT object
 ## Hardware Prerequisites
 - RaspberryPi
 - Smartphone 
+- UltraSonic Sensor
 
 ## Software Prerequisites
 - Smart Parking Android Application
